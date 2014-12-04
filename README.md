@@ -9,7 +9,7 @@ The default quota value is set in ```alfresco-global.properties``` file and must
 
 The plugin is licensed under the [LGPL v3.0](http://www.gnu.org/licenses/lgpl-3.0.html). The current version is compatible with **Alfresco 4.2.c/f** and **5.0.a/b**.
 
-It has been developed based on [alfresco-defaultquota-policy](https://code.google.com/p/alfresco-defaultquota-policy/)
+It has been developed based on [alfresco-folder-quota](https://code.google.com/p/alfresco-folder-quota/)
 
 Downloading the ready-to-deploy-plugin
 --------------------------------------
