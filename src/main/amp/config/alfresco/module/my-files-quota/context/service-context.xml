@@ -39,5 +39,17 @@
         <property name="maximumPoolSize" value="${folder.quota.maximum.pool.size}" />
         <property name="threadPriority" value="${folder.quota.thread.priority}" />
     </bean>
+    
+	<bean id="webscript.es.keensoft.myfiles.quota.get" 
+	      class="es.keensoft.alfresco.action.webscript.MyFilesQuotaGet" parent="webscript">
+	      <property name="nodeService" ref="NodeService"/>
+	      <property name="personService" ref="PersonService" />
+    </bean>
 	
+	<bean id="webscript.es.keensoft.myfiles.quota.post" 
+	      class="es.keensoft.alfresco.action.webscript.MyFilesQuotaPost" parent="webscript">
+	      <property name="nodeService" ref="NodeService"/>
+	      <property name="personService" ref="PersonService" />
+    </bean>
+    
 </beans>

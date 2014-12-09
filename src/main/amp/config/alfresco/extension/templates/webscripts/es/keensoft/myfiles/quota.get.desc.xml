@@ -1,0 +1,10 @@
+<webscript>
+  <shortname>Get quota for a user on Home Folder</shortname>
+  <description>Get quota for a user on Home Folder
+  To test: curl -v -u admin:admin "http://localhost:8080/alfresco/service/keensoft/myfiles/quota/{username}"
+  </description>
+  <url>/keensoft/myfiles/quota/{username}</url>
+  <format default="json"/>
+  <authentication>admin</authentication>
+  <transaction>none</transaction>
+</webscript>

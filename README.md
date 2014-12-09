@@ -32,9 +32,22 @@ Configuring the quota
 ---------------------
 Include and set the following properties at ```alfresco-global.properties``` on your Alfresco installation:
 ```sh
-	# Folder quota in bytes
+	# Folder quota in bytes (10 Mb)
 	user.creation.default.quota=10737418
 	folder.quota.core.pool.size=10
 	folder.quota.maximum.pool.size=20
 	folder.quota.thread.priority=5
 ```
+
+All users shall be created with default quota assignment.
+
+You can get quota for a user on Home Folder invoking the webscript: 
+```sh
+curl -v -u admin:admin "http://localhost:8080/alfresco/service/keensoft/myfiles/quota/{username}"
+```
+
+You can create or change quota for a user on Home Folder invoking the webscript:
+```sh
+curl -v -u admin:admin -X POST -d '{"quota":"{quota}"}' "http://localhost:8080/alfresco/service/keensoft/myfiles/quota/{username}" 
+```
+The following property must be set: quota (amount of bytes allowed in My Files user folder for user {username})

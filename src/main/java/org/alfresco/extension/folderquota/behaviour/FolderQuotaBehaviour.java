@@ -216,6 +216,7 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
         						currentSize=0L;
         					}
         					Long newSize = currentSize + sizeChange;
+        					if (newSize < 0) newSize = 0L;
         					nodeService.setProperty(quotaFolder, FolderQuotaModel.PROP_FQ_SIZE_CURRENT, newSize);
         					return newSize;
         				}

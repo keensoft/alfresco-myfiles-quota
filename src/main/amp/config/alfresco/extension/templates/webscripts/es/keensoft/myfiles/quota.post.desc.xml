@@ -1,0 +1,17 @@
+<webscript>
+  <shortname>Create quota for a user on Home Folder</shortname>
+  <description><![CDATA[
+  Create quota for a user on Home Folder
+  <br />
+  To test: curl -v -u admin:admin -X POST -H "Content-type:application/json" -d '{"quota":"{quota}"}' http://localhost:8080/alfresco/service/keensoft/myfiles/quota/{username}
+  <br />
+  The following properties must be set.
+  <dl>
+  <dt>quota</dt><dd>amount of bytes allowed in My Files user folder</dd>
+  </dl>  
+  ]]></description>
+  <url>/keensoft/myfiles/quota/{username}</url>
+  <format default="json">argument</format>
+  <authentication>admin</authentication>
+  <transaction>none</transaction>
+</webscript>
