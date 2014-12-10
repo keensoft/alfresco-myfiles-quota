@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import javax.transaction.UserTransaction;
-
 import org.alfresco.extension.folderquota.FolderQuotaModel;
 import org.alfresco.extension.folderquota.FolderUsageCalculator;
 import org.alfresco.extension.folderquota.SizeChange;
@@ -30,6 +28,8 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.OwnableService;
+import org.alfresco.service.cmr.usage.ContentQuotaException;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.log4j.Logger;
@@ -84,34 +84,35 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
 	@Override
     public void onContentPropertyUpdate(NodeRef nodeRef, QName propertyQName, ContentData beforeValue, ContentData afterValue) {
 
-    	long change = 0;
+    	long contentSize = 0;
     	
-    	if(beforeValue == null) change = afterValue.getSize();
-    	else change = afterValue.getSize() - beforeValue.getSize();
+    	if(beforeValue == null) contentSize = afterValue.getSize();
+    	else contentSize = afterValue.getSize() - beforeValue.getSize();
     	
         NodeRef quotaParent = usage.getParentFolderWithQuota(nodeRef);
         
-        if(change > 0) {
+        if(contentSize > 0) {
         	
 	        if(quotaParent != null) {
 	        	
 	        	Long quotaSize = (Long) nodeService.getProperty(quotaParent, FolderQuotaModel.PROP_FQ_SIZE_QUOTA);
 	        	Long currentSize = (Long) nodeService.getProperty(quotaParent, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
 	        	
-	        	if(quotaSize != null) {
-		        	if(currentSize + change > quotaSize) {
-			        	UserTransaction tx = transactionService.getUserTransaction();
-			        	try {
-			        		tx.rollback();
-			        	}
-			        	catch(Throwable ex) {
-			        		logger.warn(String.format("[FolderQuota] - An upload to folder %s failed due to quota", quotaParent));
-			        	}
-			        	logger.error("[FolderQuota] - Folder quota exceeded, current usage: " + currentSize + ", quota: " + quotaSize);
+                String owner = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_OWNER);
+                if ((owner == null) || (owner.equals(OwnableService.NO_OWNER))) {
+                    owner = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_CREATOR);
+                }
+	        	
+	        	if (quotaSize != null) {
+	        		
+		        	if (currentSize + contentSize > quotaSize) {
+		                throw new ContentQuotaException("User (" + owner + ") quota exceeded: content=" + contentSize +
+                                ", usage=" + currentSize +
+                                ", quota=" + quotaSize);
+		        	} else {
+		        		updateSize(quotaParent, contentSize);
 		        	}
-		        	else {
-		        		updateSize(quotaParent, change);
-		        	}
+		        	
 	        	} else {
 	        		logger.warn(String.format("[FolderQuota] - Folder %s has the quota aspect added but no quota set", quotaParent));
 	        	}
