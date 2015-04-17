@@ -7,9 +7,13 @@ Alfresco's default quota is applied to every content uploaded by a user. This ex
 
 The default quota value is set in ```alfresco-global.properties``` file and must be defined in bytes.
 
-The plugin is licensed under the [LGPL v3.0](http://www.gnu.org/licenses/lgpl-3.0.html). The current version is compatible with **Alfresco 4.2.c/f** and **5.0.a/b**.
+The plugin is licensed under the [LGPL v3.0](http://www.gnu.org/licenses/lgpl-3.0.html). The current version is compatible with **5.0**.
 
 It has been developed based on [alfresco-folder-quota](https://code.google.com/p/alfresco-folder-quota/)
+
+On addition, during [Alfresco Global Virtual Hack-a-thon 2015](https://wiki.alfresco.com/wiki/Projects_and_Teams_Global_Virtual_Hack-a-thon_2015), folder quota setting has been included in Share interface. So every folder can be controlled by a quota (even Sites folders).
+
+![alfresco-folder-quota](https://cloud.githubusercontent.com/assets/1818300/7205928/2fa66e04-e52d-11e4-9c5e-e057f80500f7.png)
 
 Downloading the ready-to-deploy-plugin
 --------------------------------------
