@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+    
+   <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+      <property name="resourceBundles">
+         <list>
+         	<value>alfresco.module.${project.artifactId}.messages.folder-quota-actions</value>
+         </list>
+      </property>
+   </bean>   
+   
+   <bean id="evaluator.doclib.action.quotas" parent="evaluator.doclib.action.hasAspect">
+      <property name="aspects">
+         <list>
+            <value>fq:quota</value>
+         </list>
+      </property>
+   </bean>
+   
+	<bean id="evaluator.doclib.user.isadmin" class="es.keensoft.alfresco.repo.evaluator.IsAdminEvaluator" />
+	<bean id="evaluator.doclib.action.quotas.full" class="es.keensoft.alfresco.repo.evaluator.FullQuotaPercentageEvaluator" />
+	<bean id="evaluator.doclib.action.quotas.half" class="es.keensoft.alfresco.repo.evaluator.HalfQuotaPercentageEvaluator" />
+	<bean id="evaluator.doclib.action.quotas.empty" class="es.keensoft.alfresco.repo.evaluator.EmptyQuotaPercentageEvaluator" />
+    
+</beans>

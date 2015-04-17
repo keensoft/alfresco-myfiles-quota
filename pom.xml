@@ -3,27 +3,26 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>es.keensoft.alfresco</groupId>
-    <artifactId>my-files-quota</artifactId>
-    <version>0.8.0</version>
-    <name>my-files-quota AMP project</name>
-    <packaging>amp</packaging>
+    <artifactId>alfresco-folder-quota</artifactId>
+    <version>1.0.0</version>
+    <name>alfresco-folder-quota project</name>
+    <packaging>pom</packaging>
 
     <parent>
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
-        <version>1.1.1</version>
+        <version>2.0.0</version>
     </parent>
 
     <properties>
         <alfresco.groupId>org.alfresco</alfresco.groupId>
-        <alfresco.version>4.2.f</alfresco.version>
-        <app.log.root.level>WARN</app.log.root.level>
-        <alfresco.data.location>alf_data_dev</alfresco.data.location>
-        <alfresco.client.war>alfresco</alfresco.client.war>
-        <alfresco.client.war.groupId>org.alfresco</alfresco.client.war.groupId>
-        <alfresco.client.war.version>4.2.f</alfresco.client.war.version>
-        <env>local</env>
+        <alfresco.version>5.0.d</alfresco.version>
     </properties>
+
+    <modules>
+        <module>alfresco-folder-quota-repo</module>
+        <module>alfresco-folder-quota-share</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
@@ -42,25 +41,33 @@
             <artifactId>alfresco-repository</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>share</artifactId>
+            <version>${alfresco.version}</version>
+            <classifier>classes</classifier>
+            <scope>provided</scope>
         </dependency>
+        <dependency>
+          <groupId>org.springframework.extensions.surf</groupId>
+          <artifactId>spring-surf-api</artifactId>
+          <scope>provided</scope>
+        </dependency>        
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>alfresco-public-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
+    <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>7</source>
+                        <target>7</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
 </project>

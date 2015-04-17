@@ -1,0 +1,82 @@
+<alfresco-config>
+
+	<config evaluator="aspect" condition="fq:quota">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="fq:sizeCurrent" />
+					<show id="fq:sizeQuota" />
+				</field-visibility>
+				<appearance>
+					<set id="quotas" appearance="bordered-panel" label-id="panel.quotas" />
+					<field id="fq:sizeCurrent" set="quotas" label-id="prop.size.current" read-only="true"/>
+					<field id="fq:sizeQuota" set="quotas" label-id="prop.size.quotas" read-only="true">
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
+	<config evaluator="string-compare" condition="DocumentLibrary">
+		<indicators>
+			<indicator id="indicator.full" index="1"
+					icon="full-quota-16.png"
+					label="indicator.full" >
+			    <evaluator>evaluator.doclib.action.quotas</evaluator>
+				<evaluator>evaluator.doclib.action.quotas.full</evaluator>
+			</indicator>
+			<indicator id="indicator.half" index="1"
+					icon="half-quota-16.png"
+					label="indicator.half" >
+			    <evaluator>evaluator.doclib.action.quotas</evaluator>
+				<evaluator>evaluator.doclib.action.quotas.half</evaluator>
+			</indicator>
+			<indicator id="indicator.empty" index="1"
+					icon="empty-quota-16.png"
+					label="indicator.empty" >
+			    <evaluator>evaluator.doclib.action.quotas</evaluator>
+				<evaluator>evaluator.doclib.action.quotas.empty</evaluator>
+			</indicator>
+		</indicators>
+	</config>
+	
+    <config evaluator="string-compare" condition="DocLibActions">
+        <actions>
+	         <action id="folder-quota" type="javascript">
+	            <param name="function">onActionFormDialog</param>
+	            <param name="itemKind">action</param>
+	            <param name="itemId">folder-quota</param>
+	            <param name="mode">create</param>
+	            <param name="destination">{node.nodeRef}</param>
+	            <param name="successMessage">message.folder.quota.success</param>
+	            <param name="failureMessage">message.folder.quota.failure</param>
+				<evaluator>evaluator.doclib.user.isadmin</evaluator>
+	         </action>	         
+        </actions>
+        <actionGroups>
+            <actionGroup id="folder-browse">
+                <action index="400" id="folder-quota" label="actions.folder.quota" icon="folder-quota-icon" />
+            </actionGroup>
+            <actionGroup id="folder-details">
+                <action index="400" id="folder-quota" label="actions.folder.quota" icon="folder-quota-icon" />
+            </actionGroup>
+        </actionGroups>        
+    </config>
+     
+   <config evaluator="string-compare" condition="folder-quota">
+      <forms>
+         <form>
+            <field-visibility>
+               <show id="size-quota" />
+            </field-visibility>
+            <appearance>
+               <field id="size-quota" label-id="label.form.quota">
+                   <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+               </field>
+            </appearance>
+         </form>
+      </forms>
+   </config>
+ 
+ 	
+</alfresco-config>
