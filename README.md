@@ -52,6 +52,6 @@ curl -v -u admin:admin "http://localhost:8080/alfresco/service/keensoft/myfiles/
 
 You can create or change quota for a user on Home Folder invoking the webscript:
 ```sh
-curl -v -u admin:admin -X POST -d '{"quota":"{quota}"}' "http://localhost:8080/alfresco/service/keensoft/myfiles/quota/{username}" 
+curl -v -u admin:admin -H 'Content-Type: application/json' -d '{"quota":"104857600"}' "http://localhost:8080/alfresco/service/keensoft/myfiles/quota/user.name"
 ```
 The following property must be set: quota (amount of bytes allowed in My Files user folder for user {username})
