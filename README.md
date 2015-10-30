@@ -17,9 +17,10 @@ On addition, during [Alfresco Global Virtual Hack-a-thon 2015](https://wiki.alfr
 
 Downloading the ready-to-deploy-plugin
 --------------------------------------
-The binary distribution is made of one AMP file:
+The binary distribution is made of two AMP files:
 
-* [repo AMP](https://github.com/keensoft/alfresco-myfiles-quota/blob/master/dist/my-files-quota.amp?raw=true)
+* [repo AMP](https://github.com/keensoft/alfresco-myfiles-quota/releases/download/2.0.0/alfresco-folder-quota-repo-1.0.0.amp)
+* [share AMP](https://github.com/keensoft/alfresco-myfiles-quota/releases/download/2.0.0/alfresco-folder-quota-share-1.0.0.amp)
 
 You can install it by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/dev-extensions-tutorials-simple-module-install-amp.html)
 
