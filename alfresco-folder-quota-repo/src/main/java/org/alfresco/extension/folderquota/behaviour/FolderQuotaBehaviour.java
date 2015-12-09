@@ -36,7 +36,8 @@ import org.apache.log4j.Logger;
 
 public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPropertyUpdatePolicy,
 	NodeServicePolicies.BeforeDeleteNodePolicy, NodeServicePolicies.OnMoveNodePolicy, 
-	NodeServicePolicies.OnAddAspectPolicy, NodeServicePolicies.OnCreateNodePolicy {
+	NodeServicePolicies.OnAddAspectPolicy, NodeServicePolicies.OnCreateNodePolicy,
+	NodeServicePolicies.OnRestoreNodePolicy {
 
     private static Logger logger = Logger.getLogger(FolderQuotaBehaviour.class.getName());
     
@@ -63,6 +64,8 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
         		new JavaBehaviour(this, "onAddAspect", Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
 		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ContentModel.TYPE_PERSON, 
 				new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnRestoreNodePolicy.QNAME, ContentModel.TYPE_CONTENT, 
+        		new JavaBehaviour(this, "onRestoreNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
 
         transactionListener = new FolderSizeTransactionListener();
         
@@ -174,6 +177,41 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
     	if(quotaParentAfter != null) {
     		updateSize(quotaParentAfter, change);
     	}
+    	
+    	if (quotaParentAfter != null) {
+			Long quotaSize = (Long) nodeService.getProperty(quotaParentAfter, FolderQuotaModel.PROP_FQ_SIZE_QUOTA);
+			Long currentSize = (Long) nodeService.getProperty(quotaParentAfter, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
+			if (currentSize + change > quotaSize) {
+				String folderName = (String) nodeService.getProperty(quotaParentAfter, ContentModel.PROP_NAME);
+		        throw new ContentQuotaException("Folder (" + folderName + ") quota exceeded: content=" + change + 
+		                ", usage=" + currentSize +
+		                ", quota=" + quotaSize);
+			}
+    	}
+    	
+	}
+	
+	@Override
+	public void onRestoreNode(final ChildAssociationRef childAssocRef) {
+        NodeRef quotaParent = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<NodeRef>() {
+        	
+        	@Override
+        	public NodeRef doWork() throws Exception {
+        		return usage.getParentFolderWithQuota(childAssocRef.getChildRef());
+        	}
+        	
+        });
+        if (quotaParent != null) {
+        	long change = usage.getChangeSize(childAssocRef.getChildRef());
+			Long quotaSize = (Long) nodeService.getProperty(quotaParent, FolderQuotaModel.PROP_FQ_SIZE_QUOTA);
+			Long currentSize = (Long) nodeService.getProperty(quotaParent, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
+			if (currentSize + change > quotaSize) {
+				String folderName = (String) nodeService.getProperty(quotaParent, ContentModel.PROP_NAME);
+		        throw new ContentQuotaException("Folder (" + folderName + ") quota exceeded: content=" + change + 
+		                ", usage=" + currentSize +
+		                ", quota=" + quotaSize);
+			}
+        }
 	}
 
 	@Override
@@ -326,5 +364,5 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
 	public void setDefaultQuota(Long defaultQuota) {
 		this.defaultQuota = defaultQuota;
 	}
-	
+
 }
