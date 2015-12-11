@@ -61,7 +61,10 @@ public class FolderUsageCalculator {
 			else
 			{
 				ContentData contentRef = (ContentData) nodeService.getProperty(fi.getNodeRef(), ContentModel.PROP_CONTENT);
-				size = size + contentRef.getSize();
+				// #7 (nodes without content)
+				if (contentRef != null) {
+				    size = size + contentRef.getSize();
+				}
 			}
 		}
 		
