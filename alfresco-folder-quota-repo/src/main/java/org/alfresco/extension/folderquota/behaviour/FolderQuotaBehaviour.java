@@ -309,13 +309,16 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
         			RetryingTransactionCallback<Long> callback = new RetryingTransactionCallback<Long>() {
         				
         				public Long execute() throws Throwable {
-        					Long currentSize = (Long) nodeService.getProperty(quotaFolder, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
-        					if (currentSize == null)  {
-        						currentSize=0L;
+        					Long newSize = 0L;
+        					if (nodeService.exists(quotaFolder)) {
+	        					Long currentSize = (Long) nodeService.getProperty(quotaFolder, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
+	        					if (currentSize == null)  {
+	        						currentSize=0L;
+	        					}
+	        					newSize = currentSize + sizeChange;
+	        					if (newSize < 0) newSize = 0L;
+	        					nodeService.setProperty(quotaFolder, FolderQuotaModel.PROP_FQ_SIZE_CURRENT, newSize);
         					}
-        					Long newSize = currentSize + sizeChange;
-        					if (newSize < 0) newSize = 0L;
-        					nodeService.setProperty(quotaFolder, FolderQuotaModel.PROP_FQ_SIZE_CURRENT, newSize);
         					return newSize;
         				}
         				
@@ -325,7 +328,7 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
         				txnHelper.doInTransaction(callback, false, true);
 
         			} catch (Throwable e) {
-        				logger.error("Failed to update folder size on quota folder node: " + quotaFolder);
+        				logger.error("Failed to update folder size on quota folder node: " + quotaFolder, e);
         			}
         			return "";
         		}
