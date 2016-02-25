@@ -99,9 +99,13 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
 	@Override
     public void onContentPropertyUpdate(final NodeRef nodeRef, QName propertyQName, ContentData beforeValue, ContentData afterValue) {
 		
-    	long contentSize = 0;
+		if (!nodeService.exists(nodeRef)) {
+			return;
+		}
+		
+		long contentSize = 0;
     	
-    	if(beforeValue == null) contentSize = afterValue.getSize();
+    	if (beforeValue == null) contentSize = afterValue.getSize();
     	else contentSize = afterValue.getSize() - beforeValue.getSize();
     	
         NodeRef quotaParent = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<NodeRef>() {
