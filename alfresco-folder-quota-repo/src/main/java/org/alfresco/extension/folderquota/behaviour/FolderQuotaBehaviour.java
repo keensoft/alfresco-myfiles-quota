@@ -106,6 +106,7 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
 		long contentSize = 0;
     	
     	if (beforeValue == null) contentSize = afterValue.getSize();
+    	else if (afterValue == null) contentSize = -beforeValue.getSize(); 
     	else contentSize = afterValue.getSize() - beforeValue.getSize();
     	
         NodeRef quotaParent = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<NodeRef>() {
