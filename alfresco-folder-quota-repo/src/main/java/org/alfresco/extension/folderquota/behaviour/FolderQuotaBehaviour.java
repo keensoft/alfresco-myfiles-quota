@@ -122,20 +122,20 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
         	
 	        if(quotaParent != null) {
 	        	
-	        	Long quotaSize = (Long) nodeService.getProperty(quotaParent, FolderQuotaModel.PROP_FQ_SIZE_QUOTA);
-	        	Long currentSize = (Long) nodeService.getProperty(quotaParent, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
+			Long quotaSize = getFolderQuotaSizeDefined(quotaParent);
+			Long currentSize = getFolderQuotaSizeCurrent(quotaParent);
 	        	
-                String owner = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_OWNER);
-                if ((owner == null) || (owner.equals(OwnableService.NO_OWNER))) {
-                    owner = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_CREATOR);
-                }
+			String owner = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_OWNER);
+			if ((owner == null) || (owner.equals(OwnableService.NO_OWNER))) {
+			    owner = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_CREATOR);
+			}
 	        	
 	        	if (quotaSize != null) {
 	        		
 		        	if (currentSize + contentSize > quotaSize) {
 		                throw new ContentQuotaException("User (" + owner + ") quota exceeded: content=" + contentSize +
-                                ", usage=" + currentSize +
-                                ", quota=" + quotaSize);
+					", usage=" + currentSize +
+					", quota=" + quotaSize);
 		        	} else {
 		        		updateSize(quotaParent, contentSize);
 		        	}
@@ -184,10 +184,11 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
     	}
     	
     	if (quotaParentAfter != null) {
-			Long quotaSize = (Long) nodeService.getProperty(quotaParentAfter, FolderQuotaModel.PROP_FQ_SIZE_QUOTA);
-			Long currentSize = (Long) nodeService.getProperty(quotaParentAfter, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
+		
+			Long quotaSize = getFolderQuotaSizeDefined(quotaParentAfter);
+			Long currentSize = getFolderQuotaSizeCurrent(quotaParentAfter);
 			if (currentSize + change > quotaSize) {
-				String folderName = (String) nodeService.getProperty(quotaParentAfter, ContentModel.PROP_NAME);
+				String folderName = getFolderQuotaName(quotaParentAfter);
 		        throw new ContentQuotaException("Folder (" + folderName + ") quota exceeded: content=" + change + 
 		                ", usage=" + currentSize +
 		                ", quota=" + quotaSize);
@@ -208,10 +209,10 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
         });
         if (quotaParent != null) {
         	long change = usage.getChangeSize(childAssocRef.getChildRef());
-			Long quotaSize = (Long) nodeService.getProperty(quotaParent, FolderQuotaModel.PROP_FQ_SIZE_QUOTA);
-			Long currentSize = (Long) nodeService.getProperty(quotaParent, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
+			Long quotaSize = getFolderQuotaSizeDefined(quotaParent);
+			Long currentSize = getFolderQuotaSizeCurrent(quotaParent);
 			if (currentSize + change > quotaSize) {
-				String folderName = (String) nodeService.getProperty(quotaParent, ContentModel.PROP_NAME);
+				String folderName = getFolderQuotaName(quotaParent);
 		        throw new ContentQuotaException("Folder (" + folderName + ") quota exceeded: content=" + change + 
 		                ", usage=" + currentSize +
 		                ", quota=" + quotaSize);
@@ -258,6 +259,31 @@ public class FolderQuotaBehaviour implements ContentServicePolicies.OnContentPro
 		
 		
 	}
+
+	private String getFolderQuotaName(final NodeRef nodeRef) {
+		return (String) getFolderQuotaProperty(nodeRef, ContentModel.PROP_NAME);
+	}
+
+	private Long getFolderQuotaSizeDefined(final NodeRef nodeRef) {
+		return (Long) getFolderQuotaProperty(nodeRef, FolderQuotaModel.PROP_FQ_SIZE_QUOTA);
+	}
+
+	private Long getFolderQuotaSizeCurrent(final NodeRef nodeRef) {
+		return (Long) getFolderQuotaProperty(nodeRef, FolderQuotaModel.PROP_FQ_SIZE_CURRENT);
+	}
+
+	private Serializable getFolderQuotaProperty(final NodeRef nodeRef, final QName propertyQName) {
+		
+		// Accessing folder quota can require system privileges if the current user only has access to a child folder
+		return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Serializable>() {
+			
+		    @Override
+		    public Serializable doWork() throws Exception {
+				return nodeService.getProperty(nodeRef, propertyQName);	
+		    }
+		});
+	}
+
 
 	private void updateSize(NodeRef quotaFolder, Long sizeChange) {
 		
